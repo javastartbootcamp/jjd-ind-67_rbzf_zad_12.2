@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         File file = new File("employees.csv");
 
@@ -16,17 +16,19 @@ public class Main {
             int employeesNumber = getFileLineNumber(file);
             Employee[] employees = createEmployeesArray(file, employeesNumber);
 
-            FileWriter fileWriter = new FileWriter(stats);
-            fileWriter.write("Średnia wypłata: " + Statistics.avgSalary(employees) + "\n");
-            fileWriter.write("Minimalna wypłata: " + Statistics.minSalary(employees) + "\n");
-            fileWriter.write("Maksymalna wypłata: " + Statistics.maxSalary(employees) + "\n");
-            fileWriter.write("Liczba pracowników IT: " + Statistics.numberEmployeesInDep(employees, "IT") + "\n");
-            fileWriter.write("Liczba pracowników Management: " + Statistics.numberEmployeesInDep(employees, "Management") + "\n");
-            fileWriter.write("Liczba pracowników Support: " + Statistics.numberEmployeesInDep(employees, "Support") + "\n");
-
-            fileWriter.close();
+            try (FileWriter fileWriter = new FileWriter(stats)) {
+                if (employees != null) {
+                    fileWriter.write("Średnia wypłata: " + Statistics.avgSalary(employees) + "\n");
+                    fileWriter.write("Minimalna wypłata: " + Statistics.minSalary(employees) + "\n");
+                    fileWriter.write("Maksymalna wypłata: " + Statistics.maxSalary(employees) + "\n");
+                    fileWriter.write("Liczba pracowników IT: " + Statistics.numberEmployeesInDep(employees, "IT") + "\n");
+                    fileWriter.write("Liczba pracowników Management: " + Statistics.numberEmployeesInDep(employees, "Management") + "\n");
+                    fileWriter.write("Liczba pracowników Support: " + Statistics.numberEmployeesInDep(employees, "Support") + "\n");
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-
     }
 
     private static Employee[] createEmployeesArray(File file, int employeesNumber) {
