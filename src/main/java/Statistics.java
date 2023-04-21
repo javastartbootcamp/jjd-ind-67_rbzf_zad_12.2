@@ -1,6 +1,6 @@
 public class Statistics {
     public static double avgSalary(Employee[] employees) {
-        if (employees != null) {
+        if (employees != null && employees.length > 0) {
             return totalSalarySum(employees) / employees.length;
         } else {
             return 0;
@@ -18,7 +18,7 @@ public class Statistics {
     }
 
     public static double minSalary(Employee[] employees) {
-        if (employees != null) {
+        if (employees != null && employees.length > 0) {
             double minSalary = employees[0].getSalary();
             for (Employee employee : employees) {
                 if (employee.getSalary() < minSalary) {
