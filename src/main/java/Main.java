@@ -1,3 +1,5 @@
+import exceptions.EmptyFileException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -9,20 +11,20 @@ public class Main {
     public static void main(String[] args) {
 
         File file = new File("employees.csv");
+        int employeesNumber = getFileLineNumber(file);
+        Employee[] employees = createEmployeesArray(file, employeesNumber);
 
-        if (file.exists()) {
+        if (file.exists() && file.length() > 0 && employeesNumber > 0) {
             File stats = new File("stats.txt");
-
-            int employeesNumber = getFileLineNumber(file);
-            Employee[] employees = createEmployeesArray(file, employeesNumber);
-
             try (FileWriter fileWriter = new FileWriter(stats)) {
+
                 fileWriter.write("Średnia wypłata: " + Statistics.avgSalary(employees) + "\n");
                 fileWriter.write("Minimalna wypłata: " + Statistics.minSalary(employees) + "\n");
                 fileWriter.write("Maksymalna wypłata: " + Statistics.maxSalary(employees) + "\n");
                 fileWriter.write("Liczba pracowników IT: " + Statistics.numberEmployeesInDep(employees, "IT") + "\n");
                 fileWriter.write("Liczba pracowników Management: " + Statistics.numberEmployeesInDep(employees, "Management") + "\n");
                 fileWriter.write("Liczba pracowników Support: " + Statistics.numberEmployeesInDep(employees, "Support") + "\n");
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -49,8 +51,13 @@ public class Main {
                 scanner.nextLine();
                 lines++;
             }
+            if (lines == 0) {
+                throw new EmptyFileException("Pusty plik z lista pracownikow.");
+            }
         } catch (FileNotFoundException e) {
             System.err.println("Nie odnaleziono pliku");
+        } catch (EmptyFileException e) {
+            System.err.println(e.getMessage());
         }
         return lines;
     }
